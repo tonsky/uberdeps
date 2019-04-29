@@ -1,0 +1,58 @@
+# Uberjar builder for deps.edn projects
+
+Takes deps.edn and packs an uberjar out of it.
+
+- Fast: Does not unpack intermediate jars on disk.
+- Explicit: Prints dependency tree. Realize how much crap you’re packing.
+- Standalone: does not depend on current classpath, does not need live Clojure environment.
+- Embeddable and configurable: fine-tune your build by combining config options and calling specific steps from your code.
+
+## Usage
+
+Add to your bash aliases:
+
+```sh
+clj -Sdeps '{:deps {uberdeps {:mvn/version "0.1.0"}}}' -m uberdeps.uberjar
+```
+
+Or add to your `deps.edn` or `~/.clojure/deps.edn`:
+
+```clojure
+:aliases {
+  :uberjar {:extra-deps {uberdeps {:mvn/version "0.1.0"}}
+            :main-opts ["-m" "uberdeps.uberjar"]}}
+}
+```
+
+Supported command-line options are:
+
+```
+--deps-file <file>                Which deps.edn file to use to build classpath. Defaults to 'deps.edn'
+--aliases <alias:alias:...>       Colon-separated list of alias names to include from deps file. Defaults to nothing
+--target <file>                   Jar file to ouput to. Defaults to 'target/<directory-name>.jar'
+--level (debug|info|warn|error)   Verbose level. Defaults to debug
+```
+
+## Programmatic API
+
+```clojure
+(require '[uberdeps.api :as uberdeps])
+
+(let [exclusions (into uberdeps/exclusions [#"\.DS_Store" #".*\.cljs" #"cljsjs/.*"])
+      deps       (clojure.edn/read-string (slurp "deps.edn"))]
+  (binding [uberdeps/exclusions exclusions
+            uberdeps/level      :warn]
+    (uberdeps/package deps "target/uber.jar" {:aliases #{:uberjar}})))
+```
+
+## Changelog
+
+### 0.1.0 - April 29, 2019
+
+Initial version
+
+## License
+
+Copyright © 2019 Nikita Prokopov
+
+Licensed under MIT (see [LICENSE](LICENSE)).
