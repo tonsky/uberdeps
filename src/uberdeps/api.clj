@@ -122,11 +122,12 @@
 
 
 (defn- deps-map [deps {:keys [aliases]}]
-  (let [deps-map (merge-with merge
-                   {:mvn/repos
-                    {"central" {:url "https://repo1.maven.org/maven2/"}
-                     "clojars" {:url "https://repo.clojars.org/"}}}
-                   deps)]
+  (let [deps-map (->> deps
+                   (@#'clojure.tools.deps.alpha.reader/canonicalize-all-syms)
+                   (merge-with merge
+                     {:mvn/repos
+                      {"central" {:url "https://repo1.maven.org/maven2/"}
+                       "clojars" {:url "https://repo.clojars.org/"}}}))]
     (-> deps-map
       (dissoc :aliases)
       (assoc :args-map (deps/combine-aliases deps-map aliases)))))
