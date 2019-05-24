@@ -45,6 +45,14 @@ Supported command-line options are:
     (uberdeps/package deps "target/uber.jar" {:aliases #{:uberjar}})))
 ```
 
+## Using the generated uberjar
+
+If your project has a `-main` function, you can run it from within the generated uberjar:
+
+```
+java -cp target/<your project>.jar clojure.main -m <your namespace with main>
+```
+
 ## Changelog
 
 ### 0.1.2 - May 27, 2019
