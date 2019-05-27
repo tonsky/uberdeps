@@ -12,14 +12,14 @@ Takes deps.edn and packs an uberjar out of it.
 Add to your bash aliases:
 
 ```sh
-clj -Sdeps '{:deps {uberdeps {:mvn/version "0.1.1"}}}' -m uberdeps.uberjar
+clj -Sdeps '{:deps {uberdeps {:mvn/version "0.1.2"}}}' -m uberdeps.uberjar
 ```
 
 Or add to your `deps.edn` or `~/.clojure/deps.edn`:
 
 ```clojure
 :aliases {
-  :uberjar {:extra-deps {uberdeps {:mvn/version "0.1.1"}}
+  :uberjar {:extra-deps {uberdeps {:mvn/version "0.1.2"}}
             :main-opts ["-m" "uberdeps.uberjar"]}}
 }
 ```
@@ -46,6 +46,10 @@ Supported command-line options are:
 ```
 
 ## Changelog
+
+### 0.1.2 - May 27, 2019
+
+- Make target dirs if don’t exist #4
 
 ### 0.1.1 - May 3, 2019
 
