@@ -142,7 +142,8 @@
        (println (str "[uberdeps] Packaging " target "...")))
      (binding [*seen-files (atom {})
                *seen-libs  (atom #{})]
-       (.mkdirs (.getParentFile (io/file target)))
+       (when-let [p (.getParentFile (io/file target))]
+         (.mkdirs p))
        (with-open [out (JarOutputStream. (BufferedOutputStream. (FileOutputStream. target)))]
          (package-libs deps-map out)
          (package-paths deps-map out)))
