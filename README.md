@@ -20,7 +20,7 @@ Or add to your `deps.edn` or `~/.clojure/deps.edn`:
 ```clojure
 :aliases {
   :uberjar {:extra-deps {uberdeps {:mvn/version "0.1.3"}}
-            :main-opts ["-m" "uberdeps.uberjar"]}}
+            :main-opts ["-m" "uberdeps.uberjar"]}
 }
 ```
 
