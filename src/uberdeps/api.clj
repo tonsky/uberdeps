@@ -33,9 +33,15 @@
    #"(?i)META-INF/.*\.(MF|SF|RSA|DSA)"
    #"(?i)META-INF/(INDEX\.LIST|DEPENDENCIES|NOTICE|LICENSE)(\.txt)?"])
 
+(defn exclude-default
+  [path] 
+  (some #(re-matches % path) exclusions))
+
+(def ^:dynamic exclude exclude-default)
+
 
 (defn- copy-stream [^InputStream in ^String path last-modified ^JarOutputStream out]
-  (when-not (some #(re-matches % path) exclusions)
+  (when-not (exclude path) 
     (if-some [context' (get @*seen-files path)]
       (when (#{:debug :info :warn} level)
         (println (str "! Duplicate entry \"" path "\" from \"" context "\" already seen in \"" context' "\"")))
@@ -121,23 +127,10 @@
         (package* path out)))))
 
 
-(defn- deps-map [deps {:keys [aliases]}]
-  (let [deps-map (->> deps
-                   (@#'clojure.tools.deps.alpha.reader/canonicalize-all-syms)
-                   (merge-with merge
-                     {:mvn/repos
-                      {"central" {:url "https://repo1.maven.org/maven2/"}
-                       "clojars" {:url "https://repo.clojars.org/"}}}))]
-    (-> deps-map
-      (dissoc :aliases)
-      (assoc :args-map (deps/combine-aliases deps-map aliases)))))
-
-
 (defn package
-  ([deps target] (package deps target {}))
-  ([deps ^String target opts]
-   (let [deps-map (deps-map deps opts)
-         t0       (System/currentTimeMillis)]
+  ([deps-map target] (package deps-map target {}))
+  ([deps-map ^String target opts]
+   (let [t0       (System/currentTimeMillis)]
      (when (#{:debug :info} level)
        (println (str "[uberdeps] Packaging " target "...")))
      (binding [*seen-files (atom {})
