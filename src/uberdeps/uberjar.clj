@@ -9,10 +9,10 @@
 (defn -main [& {:as args}]
   (let [deps-file (or (get args "--deps-file") "deps.edn")
         target    (or (get args "--target")
-                    (as-> (io/file ".") %
-                      (.getCanonicalFile %)
-                      (.getName %)
-                      (str "target/" % ".jar")))
+                    (->> (io/file ".")
+                      (.getCanonicalFile)
+                      (.getName)
+                      (format "target/%s.jar")))
         aliases   (-> (or (get args "--aliases") "")
                     (str/split  #":")
                     (->> (remove str/blank?)
