@@ -138,7 +138,7 @@
        (when-let [p (.getParentFile (io/file target))]
          (.mkdirs p))
        (with-open [out (JarOutputStream. (BufferedOutputStream. (FileOutputStream. target)))]
-         (package-libs deps-map out)
-         (package-paths deps-map out)))
+         (package-paths deps-map out)
+         (package-libs deps-map out)))
      (when (#{:debug :info} level)
        (println (str "[uberdeps] Packaged " target " in " (- (System/currentTimeMillis) t0) " ms"))))))

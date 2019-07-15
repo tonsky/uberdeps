@@ -55,7 +55,7 @@
                       (into #{})))
         level     (keyword (or (get args "--level") "debug"))
         namespaces (map symbol (clojure.string/split (get args "--ns") #","))
-        _ (assert (not-empty namespaces) "Specify which namespace should be compiled")
+        _ (assert (not-empty namespaces) "Specify which namespace/s should be compiled")
         temp-dir (create-temp-dir "")
         exclusion-file (clojure.java.io/file (get args "--exclusion-file"))
         exclusion-patterns (map
