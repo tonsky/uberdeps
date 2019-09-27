@@ -71,7 +71,7 @@
 (defn package* [path out]
   (let [file (io/file path)]
     (cond
-      (not (or (.exists file) (str/ends-with? path ".pom")))
+      (not (.exists file))
       :skip
 
       (.isDirectory file)
@@ -103,7 +103,9 @@
 
 
 (defn package-libs [deps-map out]
-  (let [lib-map (->> (deps/resolve-deps deps-map (:args-map deps-map))
+  (let [lib-map (->> (filter (fn [[_ dep-map]]
+                               (not (contains? dep-map :extension)))
+                             (deps/resolve-deps deps-map (:args-map deps-map)))
                   (into (sorted-map)))]
     (doseq [[lib coord] lib-map
             :when (nil? (:dependents coord))] ; roots
