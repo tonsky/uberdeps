@@ -56,7 +56,7 @@
       (with-open [in (io/input-stream file)]
         (let [rel-path (-> (.getPath file) (subs (count dir-path')))
               modified (FileTime/fromMillis (.lastModified file))]
-        (copy-stream in rel-path modified out))))))
+         (copy-stream in rel-path modified out))))))
 
 
 (defn copy-jar [^File file out]
@@ -71,7 +71,7 @@
 (defn package* [path out]
   (let [file (io/file path)]
     (cond
-      (not (.exists file))
+      (not (or (.exists file) (str/ends-with? path ".pom")))
       :skip
 
       (.isDirectory file)
