@@ -56,7 +56,7 @@
       (with-open [in (io/input-stream file)]
         (let [rel-path (-> (.getPath file) (subs (count dir-path')))
               modified (FileTime/fromMillis (.lastModified file))]
-        (copy-stream in rel-path modified out))))))
+         (copy-stream in rel-path modified out))))))
 
 
 (defn copy-jar [^File file out]
@@ -103,7 +103,9 @@
 
 
 (defn package-libs [deps-map out]
-  (let [lib-map (->> (deps/resolve-deps deps-map (:args-map deps-map))
+  (let [lib-map (->> (filter (fn [[_ dep-map]]
+                               (not (contains? dep-map :extension)))
+                             (deps/resolve-deps deps-map (:args-map deps-map)))
                   (into (sorted-map)))]
     (doseq [[lib coord] lib-map
             :when (nil? (:dependents coord))] ; roots
