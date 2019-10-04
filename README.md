@@ -55,6 +55,10 @@ java -cp target/<your project>.jar clojure.main -m <your namespace with main>
 
 ## Changelog
 
+### 0.1.5 - Oct 4, 2019
+
+- Ignore non-jar dependencies #14 #15
+
 ### 0.1.4 - June 5, 2019
 
 - Package paths before jars so that local files take priority over deps #9

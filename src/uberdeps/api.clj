@@ -103,9 +103,9 @@
 
 
 (defn package-libs [deps-map out]
-  (let [lib-map (->> (filter (fn [[_ dep-map]]
-                               (not (contains? dep-map :extension)))
-                             (deps/resolve-deps deps-map (:args-map deps-map)))
+  (let [lib-map (->>
+                  (deps/resolve-deps deps-map (:args-map deps-map))
+                  (remove (fn [[_ deps-map]] (contains? deps-map :extension))) ;; remove non-jar deps (https://github.com/tonsky/uberdeps/issues/14 https://github.com/tonsky/uberdeps/pull/15)
                   (into (sorted-map)))]
     (doseq [[lib coord] lib-map
             :when (nil? (:dependents coord))] ; roots
