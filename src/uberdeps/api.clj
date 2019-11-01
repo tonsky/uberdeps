@@ -40,7 +40,7 @@
       (when (#{:debug :info :warn} level)
         (println (str "! Duplicate entry \"" path "\" from \"" context "\" already seen in \"" context' "\"")))
       (let [entry (doto
-                    (JarEntry. path)
+                    (JarEntry. (str/replace path (File/separator) "/"))
                     (.setLastModifiedTime last-modified))]
         (.putNextEntry out entry)
         (io/copy in out)
