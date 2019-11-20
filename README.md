@@ -30,6 +30,7 @@ Supported command-line options are:
 --deps-file <file>                Which deps.edn file to use to build classpath. Defaults to 'deps.edn'
 --aliases <alias:alias:...>       Colon-separated list of alias names to include from deps file. Defaults to nothing
 --target <file>                   Jar file to ouput to. Defaults to 'target/<directory-name>.jar'
+--main-class <ns>                 Main class, if it exists (e.g. app.core)
 --level (debug|info|warn|error)   Verbose level. Defaults to debug
 ```
 
@@ -52,6 +53,43 @@ If your project has a `-main` function, you can run it from within the generated
 ```
 java -cp target/<your project>.jar clojure.main -m <your namespace with main>
 ```
+
+## Creating an executable jar
+
+Given your project has a `-main` function like below:
+
+```clojure
+(ns app.core
+  (:gen-class))
+
+(defn -main [& args]
+      (println "Hello world"))
+```
+
+You can create an executable jar with these steps:
+
+```bash
+# ensure dir exists
+mkdir classes
+
+# aot compile
+clj -e "(compile 'app.core)"
+
+# uberjar with --main-class option
+clojure -A:uberjar --main-class app.core
+```
+
+This will create a manifest in the jar under META-INF/MANIFEST.MF,
+which then allows you to run your jar directly:
+
+```
+java -jar target/<your-project>.jar
+```
+
+For more information on AOT compiling in tools.deps, have a look at the official
+[guide](https://clojure.org/guides/deps_and_cli#aot_compilation).
+
+
 
 ## Changelog
 
