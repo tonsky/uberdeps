@@ -12,14 +12,14 @@ Takes deps.edn and packs an uberjar out of it.
 Add to your bash aliases:
 
 ```sh
-clj -Sdeps '{:deps {uberdeps {:mvn/version "0.1.6"}}}' -m uberdeps.uberjar
+clj -Sdeps '{:deps {uberdeps {:mvn/version "0.1.7"}}}' -m uberdeps.uberjar
 ```
 
 Or add to your `deps.edn` or `~/.clojure/deps.edn`:
 
 ```clojure
 :aliases {
-  :uberjar {:extra-deps {uberdeps {:mvn/version "0.1.6"}}
+  :uberjar {:extra-deps {uberdeps {:mvn/version "0.1.7"}}
             :main-opts ["-m" "uberdeps.uberjar"]}
 }
 ```
@@ -79,19 +79,20 @@ clj -e "(compile 'app.core)"
 clojure -A:uberjar --main-class app.core
 ```
 
-This will create a manifest in the jar under META-INF/MANIFEST.MF,
-which then allows you to run your jar directly:
+This will create a manifest in the jar under META-INF/MANIFEST.MF, which then allows you to run your jar directly:
 
 ```
 java -jar target/<your-project>.jar
 ```
 
-For more information on AOT compiling in tools.deps, have a look at the official
-[guide](https://clojure.org/guides/deps_and_cli#aot_compilation).
-
-
+For more information on AOT compiling in tools.deps, have a look at the official [guide](https://clojure.org/guides/deps_and_cli#aot_compilation).
 
 ## Changelog
+
+### 0.1.7 - Dec 20, 2019
+
+- --main-class / :main-class option added #13 #18 thx @gnarroway
+- tools.deps updated to 0.8.599
 
 ### 0.1.6 - Oct 4, 2019
 

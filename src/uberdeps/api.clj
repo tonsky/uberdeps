@@ -5,9 +5,9 @@
    [clojure.tools.deps.alpha :as deps])
   (:import
    [java.io File InputStream FileInputStream FileOutputStream BufferedInputStream BufferedOutputStream ByteArrayInputStream]
-   [java.util.jar JarEntry JarInputStream JarOutputStream]
    [java.nio.file.attribute FileTime]
-   (java.time Instant)))
+   [java.time Instant]
+   [java.util.jar JarEntry JarInputStream JarOutputStream]))
 
 
 (set! *warn-on-reflection* true)
@@ -35,21 +35,22 @@
    #"(?i)META-INF/(INDEX\.LIST|DEPENDENCIES|NOTICE|LICENSE)(\.txt)?"])
 
 
-(defn- copy-stream
-  ([^InputStream in ^String path last-modified ^JarOutputStream out]
-   (copy-stream in path last-modified out {}))
-  ([^InputStream in ^String path last-modified ^JarOutputStream out {:keys [force?]}]
-   (when-not (and (some #(re-matches % path) exclusions) (not force?))
-     (if-some [context' (get @*seen-files path)]
-       (when (#{:debug :info :warn} level)
-         (println (str "! Duplicate entry \"" path "\" from \"" context "\" already seen in \"" context' "\"")))
-       (let [entry (doto
-                     (JarEntry. (str/replace path (File/separator) "/"))
-                     (.setLastModifiedTime last-modified))]
-         (.putNextEntry out entry)
-         (io/copy in out)
-         (.closeEntry out)
-         (swap! *seen-files assoc path context))))))
+(defn- copy-stream [^InputStream in ^String path last-modified ^JarOutputStream out]
+  (if-some [context' (get @*seen-files path)]
+    (when (#{:debug :info :warn} level)
+      (println (str "! Duplicate entry \"" path "\" from \"" context "\" already seen in \"" context' "\"")))
+    (let [entry (doto
+                  (JarEntry. (str/replace path (File/separator) "/"))
+                  (.setLastModifiedTime last-modified))]
+      (.putNextEntry out entry)
+      (io/copy in out)
+      (.closeEntry out)
+      (swap! *seen-files assoc path context))))
+
+
+(defn- copy-stream-filtered [^InputStream in ^String path last-modified ^JarOutputStream out]
+  (when-not (some #(re-matches % path) exclusions)
+    (copy-stream in path last-modified out)))
 
 
 (defn copy-directory [^File dir out]
@@ -60,7 +61,7 @@
       (with-open [in (io/input-stream file)]
         (let [rel-path (-> (.getPath file) (subs (count dir-path')))
               modified (FileTime/fromMillis (.lastModified file))]
-         (copy-stream in rel-path modified out))))))
+         (copy-stream-filtered in rel-path modified out))))))
 
 
 (defn copy-jar [^File file out]
@@ -68,7 +69,7 @@
     (loop [entry (.getNextEntry in)]
       (when (some? entry)
         (when-not (.isDirectory entry)
-          (copy-stream in (.getName entry) (.getLastModifiedTime entry) out))
+          (copy-stream-filtered in (.getName entry) (.getLastModifiedTime entry) out))
         (recur (.getNextEntry in))))))
 
 
@@ -106,6 +107,16 @@
           (package-lib lib' coord' lib-map out))))))
 
 
+(defn package-manifest
+  [opts out]
+  (when-some [main-class (:main-class opts)]
+    (let [manifest (str "Manifest-Version: 1.0\n"
+                     (format "Created-By: %s (%s)\n" (System/getProperty "java.version") (System/getProperty "java.vm.vendor"))
+                     (format "Main-Class: %s\n" main-class))
+          in       (io/input-stream (.getBytes manifest))]
+      (copy-stream in "META-INF/MANIFEST.MF" (FileTime/from (Instant/now)) out))))
+
+
 (defn package-libs [deps-map out]
   (let [lib-map (->>
                   (deps/resolve-deps deps-map (:args-map deps-map))
@@ -125,16 +136,6 @@
         (when (#{:debug} level)
           (println (str "+ " context)))
         (package* path out)))))
-
-
-(defn package-manifest
-  [opts out]
-  (when-let [main-class (:main-class opts)]
-    (let [manifest (str "Manifest-Version: 1.0\n"
-                        (format "Created-By: %s (%s)\n" (System/getProperty "java.version") (System/getProperty "java.vm.vendor"))
-                        (format "Main-Class: %s\n" main-class))
-          in       (io/input-stream (.getBytes manifest))]
-      (copy-stream in "META-INF/MANIFEST.MF" (FileTime/from (Instant/now)) out {:force? true}))))
 
 
 (defn- deps-map [deps {:keys [aliases]}]
@@ -161,8 +162,8 @@
        (when-let [p (.getParentFile (io/file target))]
          (.mkdirs p))
        (with-open [out (JarOutputStream. (BufferedOutputStream. (FileOutputStream. target)))]
+         (package-manifest opts out)
          (package-paths deps-map out)
-         (package-libs deps-map out)
-         (package-manifest opts out)))
+         (package-libs deps-map out)))
      (when (#{:debug :info} level)
        (println (str "[uberdeps] Packaged " target " in " (- (System/currentTimeMillis) t0) " ms"))))))
