@@ -69,13 +69,16 @@ Given your project has a `-main` function like below:
 You can create an executable jar with these steps:
 
 ```bash
-# ensure dir exists
+# 1. Ensure dir exists
 mkdir classes
 
-# aot compile
+# 2. Add `classes` dir to the classpath in `deps.edn`:
+# e.g. {:paths [... "classes"]}
+
+# 3. Aot compile
 clj -e "(compile 'app.core)"
 
-# uberjar with --main-class option
+# 4. Uberjar with --main-class option
 clojure -A:uberjar --main-class app.core
 ```
 
