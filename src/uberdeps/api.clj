@@ -2,7 +2,8 @@
   (:require
    [clojure.string :as str]
    [clojure.java.io :as io]
-   [clojure.tools.deps.alpha :as deps])
+   [clojure.tools.deps.alpha :as deps]
+   [clojure.tools.deps.alpha.util.dir :as deps.dir])
   (:import
    [java.io File InputStream FileInputStream FileOutputStream BufferedInputStream BufferedOutputStream ByteArrayInputStream]
    [java.nio.file.attribute FileTime]
@@ -74,7 +75,8 @@
 
 
 (defn package* [path out]
-  (let [file (io/file path)]
+  (let [file (io/file path)
+        file (if (.isAbsolute file) file (io/file deps.dir/*the-dir* file))]
     (cond
       (not (.exists file))
       :skip
