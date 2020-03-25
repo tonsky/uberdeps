@@ -102,7 +102,7 @@ deps.edn:
   ...
   :aliases {
     :uberdeps {
-      :extra-deps {uberdeps {:mvn/version "0.1.8"}}
+      :deps {uberdeps {:mvn/version "0.1.8"}}
       :main-opts ["-m" "uberdeps.uberjar"]
     }
   }
@@ -136,7 +136,7 @@ Or add to your `~/.clojure/deps.edn`:
 
 ```clojure
 :aliases {
-  :uberjar {:extra-deps {uberdeps {:mvn/version "0.1.8"}}
+  :uberjar {:deps {uberdeps {:mvn/version "0.1.8"}}
             :main-opts ["-m" "uberdeps.uberjar"]}
 }
 ```
