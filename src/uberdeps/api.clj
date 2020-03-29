@@ -111,12 +111,18 @@
 
 (defn package-manifest
   [opts out]
-  (when-some [main-class (:main-class opts)]
-    (let [manifest (str "Manifest-Version: 1.0\n"
-                     (format "Created-By: %s (%s)\n" (System/getProperty "java.version") (System/getProperty "java.vm.vendor"))
+  (let [manifest (str "Manifest-Version: 1.0\n"
+                   (format "Created-By: %s (%s)\n"
+                           (System/getProperty "java.version")
+                           (System/getProperty "java.vm.vendor"))
+                   (if-let [main-class (:main-class opts)]
                      (format "Main-Class: %s\n" main-class))
-          in       (io/input-stream (.getBytes manifest))]
-      (copy-stream in "META-INF/MANIFEST.MF" (FileTime/from (Instant/now)) out))))
+                   ; Indicate that we are generating a multi-release JAR.
+                   ; https://openjdk.java.net/jeps/238
+                   (if-let [multi-release (:multi-release opts)]
+                     (format "Multi-Release: true\n")))
+        in       (io/input-stream (.getBytes manifest))]
+    (copy-stream in "META-INF/MANIFEST.MF" (FileTime/from (Instant/now)) out)))
 
 
 (defn package-libs [deps-map out]

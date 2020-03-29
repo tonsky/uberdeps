@@ -196,6 +196,7 @@ Supported command-line options are:
 --aliases <alias:alias:...>       Colon-separated list of alias names to include from deps file. Defaults to nothing
 --target <file>                   Jar file to ouput to. Defaults to 'target/<directory-name>.jar'
 --main-class <ns>                 Main class, if it exists (e.g. app.core)
+--multi-release (true|false)      Add a multi-release flag to the manifest. Defaults to false.
 --level (debug|info|warn|error)   Verbose level. Defaults to debug
 ```
 
