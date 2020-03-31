@@ -38,7 +38,7 @@ with following content:
 uberdeps/deps.edn:
 
 ```clojure
-{:deps {uberdeps {:mvn/version "0.1.8"}}}
+{:deps {uberdeps {:mvn/version "0.1.9"}}}
 ```
 
 uberdeps/package.sh:
@@ -102,7 +102,7 @@ deps.edn:
   ...
   :aliases {
     :uberdeps {
-      :deps {uberdeps {:mvn/version "0.1.8"}}
+      :deps {uberdeps {:mvn/version "0.1.9"}}
       :main-opts ["-m" "uberdeps.uberjar"]
     }
   }
@@ -129,14 +129,14 @@ You can invoke Uberdeps from command line at any time without any prior setup.
 Add to your bash aliases:
 
 ```sh
-clj -Sdeps '{:deps {uberdeps {:mvn/version "0.1.8"}}}' -m uberdeps.uberjar
+clj -Sdeps '{:deps {uberdeps {:mvn/version "0.1.9"}}}' -m uberdeps.uberjar
 ```
 
 Or add to your `~/.clojure/deps.edn`:
 
 ```clojure
 :aliases {
-  :uberjar {:deps {uberdeps {:mvn/version "0.1.8"}}
+  :uberjar {:deps {uberdeps {:mvn/version "0.1.9"}}
             :main-opts ["-m" "uberdeps.uberjar"]}
 }
 ```
@@ -196,7 +196,7 @@ Supported command-line options are:
 --aliases <alias:alias:...>       Colon-separated list of alias names to include from deps file. Defaults to nothing
 --target <file>                   Jar file to ouput to. Defaults to 'target/<directory-name>.jar'
 --main-class <ns>                 Main class, if it exists (e.g. app.core)
---multi-release (true|false)      Add a multi-release flag to the manifest. Defaults to false.
+--multi-release                   Add Multi-Release: true to the manifest. Off by default.
 --level (debug|info|warn|error)   Verbose level. Defaults to debug
 ```
 
@@ -214,13 +214,18 @@ Supported command-line options are:
 
 ## Changelog
 
+### 0.1.9 - Mar 31, 2020
+
+- `--multi-release` / `:multi-release?` added #22 #23 thx @gavinkflam
+- tools.deps updated to 0.8.677
+
 ### 0.1.8 - Jan 13, 2020
 
 - Resolve `:paths` relative to `deps.edn` location
 
 ### 0.1.7 - Dec 20, 2019
 
-- --main-class / :main-class option added #13 #18 thx @gnarroway
+- `--main-class` / `:main-class` option added #13 #18 thx @gnarroway
 - tools.deps updated to 0.8.599
 
 ### 0.1.6 - Oct 4, 2019
@@ -253,6 +258,6 @@ Supported command-line options are:
 
 ## License
 
-Copyright © 2019 Nikita Prokopov
+Copyright © 2019 Nikita Prokopov.
 
 Licensed under MIT (see [LICENSE](LICENSE)).

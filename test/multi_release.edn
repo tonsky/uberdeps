@@ -1,0 +1,4 @@
+; see https://github.com/tonsky/uberdeps/issues/22
+{:deps
+ {org.apache.logging.log4j/log4j-api {:mvn/version "2.13.1"}
+  org.apache.logging.log4j/log4j-core {:mvn/version "2.13.1"}}}
