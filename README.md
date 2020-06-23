@@ -172,6 +172,10 @@ mkdir classes
 # 2. Add `classes` dir to the classpath in `deps.edn`:
 {:paths [... "classes"]}
 
+Make sure you have Clojure as a dependency—uberdeps won’t automatically add it for you:
+
+{:deps {org.clojure/clojure {:mvn/version "1.10.0"}, ...}}
+
 # 3. Aot compile
 clj -e "(compile 'app.core)"
 
