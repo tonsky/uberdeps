@@ -5,7 +5,7 @@
    [clojure.tools.deps.alpha :as deps]
    [clojure.tools.deps.alpha.util.dir :as deps.dir])
   (:import
-   [java.io File InputStream FileInputStream FileOutputStream BufferedInputStream BufferedOutputStream ByteArrayInputStream]
+   [java.io File InputStream FileInputStream FileOutputStream BufferedInputStream BufferedOutputStream ByteArrayInputStream ByteArrayOutputStream]
    [java.nio.file.attribute FileTime]
    [java.time Instant]
    [java.util.jar JarEntry JarInputStream JarOutputStream]))
@@ -16,6 +16,7 @@
 
 (def ^:private ^:dynamic *seen-files)
 (def ^:private ^:dynamic *seen-libs)
+(def ^:private ^:dynamic *services)
 (def ^:private ^:dynamic context)
 (def ^:private ^:dynamic indent "")
 
@@ -36,17 +37,29 @@
    #"(?i)META-INF/(INDEX\.LIST|DEPENDENCIES|NOTICE|LICENSE)(\.txt)?"])
 
 
+(defn- package-services [^JarOutputStream out]
+  (doseq [[path content] @*services
+          :let [entry (JarEntry. (str/replace path (File/separator) "/"))]]
+    (.putNextEntry out entry)
+    (io/copy content out)
+    (.closeEntry out)))
+
 (defn- copy-stream [^InputStream in ^String path last-modified ^JarOutputStream out]
-  (if-some [context' (get @*seen-files path)]
-    (when (#{:debug :info :warn} level)
-      (println (str "! Duplicate entry \"" path "\" from \"" context "\" already seen in \"" context' "\"")))
-    (let [entry (doto
-                  (JarEntry. (str/replace path (File/separator) "/"))
-                  (.setLastModifiedTime last-modified))]
-      (.putNextEntry out entry)
-      (io/copy in out)
-      (.closeEntry out)
-      (swap! *seen-files assoc path context))))
+  (if (re-matches #"(?i)META-INF/SERVICES/.*" path)
+    (let [baos (ByteArrayOutputStream.)
+          _ (io/copy in baos)
+          content (.toString baos)]
+      (swap! *services update path #(if % (str % \newline content) content)))
+    (if-some [context' (get @*seen-files path)]
+      (when (#{:debug :info :warn} level)
+        (println (str "! Duplicate entry \"" path "\" from \"" context "\" already seen in \"" context' "\"")))
+      (let [entry (doto
+                    (JarEntry. (str/replace path (File/separator) "/"))
+                    (.setLastModifiedTime last-modified))]
+        (.putNextEntry out entry)
+        (io/copy in out)
+        (.closeEntry out)
+        (swap! *seen-files assoc path context)))))
 
 
 (defn- copy-stream-filtered [^InputStream in ^String path last-modified ^JarOutputStream out]
@@ -162,12 +175,14 @@
      (when (#{:debug :info} level)
        (println (str "[uberdeps] Packaging " target "...")))
      (binding [*seen-files (atom {})
-               *seen-libs  (atom #{})]
+               *seen-libs  (atom #{})
+               *services (atom {})]
        (when-let [p (.getParentFile (io/file target))]
          (.mkdirs p))
        (with-open [out (JarOutputStream. (BufferedOutputStream. (FileOutputStream. target)))]
          (package-manifest opts out)
          (package-paths deps-map out)
-         (package-libs deps-map out)))
+         (package-libs deps-map out)
+         (package-services out)))
      (when (#{:debug :info} level)
        (println (str "[uberdeps] Packaged " target " in " (- (System/currentTimeMillis) t0) " ms"))))))
