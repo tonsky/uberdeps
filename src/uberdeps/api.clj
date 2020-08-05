@@ -38,18 +38,22 @@
 
 
 (defn- package-services [^JarOutputStream out]
-  (doseq [[path content] @*services
+  (doseq [[path contents] @*services
           :let [entry (JarEntry. (str/replace path (File/separator) "/"))]]
     (.putNextEntry out entry)
-    (io/copy content out)
+    (io/copy (first contents) out)
+    (doseq [content (next contents)]
+      (.write out \newline)
+      (io/copy content out))
     (.closeEntry out)))
 
+
 (defn- copy-stream [^InputStream in ^String path last-modified ^JarOutputStream out]
-  (if (re-matches #"(?i)META-INF/SERVICES/.*" path)
-    (let [baos (ByteArrayOutputStream.)
-          _ (io/copy in baos)
-          content (.toString baos)]
-      (swap! *services update path #(if % (str % \newline content) content)))
+  (if (re-matches #"META-INF/services/.*" path)
+    (let [baos    (ByteArrayOutputStream.)
+          _       (io/copy in baos)
+          content (.toString baos "UTF-8")]
+      (swap! *services update path (fnil conj []) content))
     (if-some [context' (get @*seen-files path)]
       (when (#{:debug :info :warn} level)
         (println (str "! Duplicate entry \"" path "\" from \"" context "\" already seen in \"" context' "\"")))
@@ -75,7 +79,7 @@
       (with-open [in (io/input-stream file)]
         (let [rel-path (-> (.getPath file) (subs (count dir-path')))
               modified (FileTime/fromMillis (.lastModified file))]
-         (copy-stream-filtered in rel-path modified out))))))
+          (copy-stream-filtered in rel-path modified out))))))
 
 
 (defn copy-jar [^File file out]
@@ -176,7 +180,7 @@
        (println (str "[uberdeps] Packaging " target "...")))
      (binding [*seen-files (atom {})
                *seen-libs  (atom #{})
-               *services (atom {})]
+               *services   (atom {})]
        (when-let [p (.getParentFile (io/file target))]
          (.mkdirs p))
        (with-open [out (JarOutputStream. (BufferedOutputStream. (FileOutputStream. target)))]

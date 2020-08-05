@@ -38,7 +38,7 @@ with following content:
 uberdeps/deps.edn:
 
 ```clojure
-{:deps {uberdeps {:mvn/version "0.1.10"}}}
+{:deps {uberdeps {:mvn/version "0.1.11"}}}
 ```
 
 uberdeps/package.sh:
@@ -102,7 +102,7 @@ deps.edn:
   ...
   :aliases {
     :uberdeps {
-      :extra-deps {uberdeps {:mvn/version "0.1.10"}}
+      :extra-deps {uberdeps {:mvn/version "0.1.11"}}
       :main-opts ["-m" "uberdeps.uberjar"]
     }
   }
@@ -129,14 +129,14 @@ You can invoke Uberdeps from command line at any time without any prior setup.
 Add to your bash aliases:
 
 ```sh
-clj -Sdeps '{:deps {uberdeps {:mvn/version "0.1.10"}}}' -m uberdeps.uberjar
+clj -Sdeps '{:deps {uberdeps {:mvn/version "0.1.11"}}}' -m uberdeps.uberjar
 ```
 
 Or add to your `~/.clojure/deps.edn`:
 
 ```clojure
 :aliases {
-  :uberjar {:extra-deps {uberdeps {:mvn/version "0.1.10"}}
+  :uberjar {:extra-deps {uberdeps {:mvn/version "0.1.11"}}
             :main-opts ["-m" "uberdeps.uberjar"]}
 }
 ```
@@ -217,6 +217,10 @@ Supported command-line options are:
 ```
 
 ## Changelog
+
+### 0.1.11 - Aug 5, 2020
+
+- Concat all `META-INF/services/**` files with matching names #2 #27 thx @jdf-id-au
 
 ### 0.1.10 - Mar 31, 2020
 
