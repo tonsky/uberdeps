@@ -38,7 +38,7 @@ with following content:
 uberdeps/deps.edn:
 
 ```clojure
-{:deps {uberdeps {:mvn/version "0.1.11"}}}
+{:deps {uberdeps/uberdeps {:mvn/version "0.1.11"}}}
 ```
 
 uberdeps/package.sh:
@@ -70,7 +70,7 @@ deps.edn:
       :extra-paths ["resources" "target/cljs/"]
     }
     :nrepl {
-      :extra-deps {nrepl {:mvn/version "0.6.0"}}
+      :extra-deps {nrepl/nrepl {:mvn/version "0.6.0"}}
     }
   }
 }
@@ -102,7 +102,7 @@ deps.edn:
   ...
   :aliases {
     :uberdeps {
-      :extra-deps {uberdeps {:mvn/version "0.1.11"}}
+      :extra-deps {uberdeps/uberdeps {:mvn/version "0.1.11"}}
       :main-opts ["-m" "uberdeps.uberjar"]
     }
   }
@@ -129,14 +129,14 @@ You can invoke Uberdeps from command line at any time without any prior setup.
 Add to your bash aliases:
 
 ```sh
-clj -Sdeps '{:deps {uberdeps {:mvn/version "0.1.11"}}}' -m uberdeps.uberjar
+clj -Sdeps '{:deps {uberdeps/uberdeps {:mvn/version "0.1.11"}}}' -m uberdeps.uberjar
 ```
 
 Or add to your `~/.clojure/deps.edn`:
 
 ```clojure
 :aliases {
-  :uberjar {:extra-deps {uberdeps {:mvn/version "0.1.11"}}
+  :uberjar {:extra-deps {uberdeps/uberdeps {:mvn/version "0.1.11"}}
             :main-opts ["-m" "uberdeps.uberjar"]}
 }
 ```
