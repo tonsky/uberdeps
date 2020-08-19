@@ -1,4 +1,4 @@
-(defproject uberdeps "0.1.11"
+(defproject uberdeps "1.0.0"
   :description "Uberjar builder for deps.edn"
   :license     {:name "MIT" :url "https://github.com/tonsky/uberdeps/blob/master/LICENSE"}
   :url         "https://github.com/tonsky/uberdeps"
