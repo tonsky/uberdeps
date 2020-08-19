@@ -1,7 +1,0 @@
-; see https://github.com/tonsky/uberdeps/issues/3
-{:deps
- {cheshire {:mvn/version "5.8.1"}
-  cheshire/cheshire {:mvn/version "5.8.0"}}
- :mvn/repos
- {"central" {:url "https://repo1.maven.org/maven2/"}
-  "clojars" {:url "https://repo.clojars.org/"}}}

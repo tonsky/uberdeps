@@ -1,0 +1,9 @@
+<component-set>
+    <components>
+        <component>
+            <role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
+            <role-hint>zip</role-hint>
+            <description>Lifecycle &amp; Mapping</description>
+        </component>
+    </components>
+</component-set>

@@ -4,4 +4,4 @@
   :url         "https://github.com/tonsky/uberdeps"
   :dependencies
   [[org.clojure/clojure "1.10.1"]
-   [org.clojure/tools.deps.alpha "0.8.677"]])
+   [org.clojure/tools.deps.alpha "0.9.763"]])

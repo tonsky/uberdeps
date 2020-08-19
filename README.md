@@ -216,56 +216,52 @@ Supported command-line options are:
     (uberdeps/package deps "target/uber.jar" {:aliases #{:uberjar}})))
 ```
 
-## Changelog
+## Merging
 
-### 0.1.11 - Aug 5, 2020
+Sometimes assembling uberjar requires combining multiple files with the same name (coming from different libraries, for example) into a single file. Uberdeps does that automatically for these:
 
-- Concat all `META-INF/services/**` files with matching names #2 #27 thx @jdf-id-au
+```clojure
+META-INF/plexus/components.xml uberdeps.api/components-merger
+#"META-INF/services/.*"        uberdeps.api/services-merger   
+#"data_readers.clj[cs]?"       uberdeps.api/clojure-maps-merger
+```
 
-### 0.1.10 - Mar 31, 2020
+You can provide your own merger by passing a merge function to `uberdeps.api/package`:
 
-- tools.deps updated to 0.8.677
+```clojure
+(def readme-merger
+  {:collect
+   (fn [acc content]
+     (conj (or acc []) (str/upper-case content)))
+   :combine
+   (fn [acc]
+     (str/join "\n" acc))})
+```
 
-### 0.1.9 - Mar 31, 2020
+Merger is a map with two keys: `:collect` and `:combine`. Collect accumulates values as they come. It takes an accumulator and a next file content, and must return the new accumulator:
 
-- `--multi-release` / `:multi-release?` added #22 #23 thx @gavinkflam
+```
+((:collect readme-merger) acc content) -> acc'
+```
 
-### 0.1.8 - Jan 13, 2020
+File content is always a string. Accumulator can be any data structure you find useful for storing merged files. In `readme-merger` accumulator is a string, in `clojure-maps-merger` it is a clojure map, etc. On a first  call to your merger accumulator will be `nil`.
 
-- Resolve `:paths` relative to `deps.edn` location
+Combine is called when all files with the same name have been processed and it is time to write the resulting single merged file to the jar. It will be called with your accumulator and must return a string with file content:
 
-### 0.1.7 - Dec 20, 2019
+```
+((:combine readme-merger) acc) -> content'
+```
 
-- `--main-class` / `:main-class` option added #13 #18 thx @gnarroway
-- tools.deps updated to 0.8.599
+Custom mergers can be passed to `uberdeps.api/package` in `:mergers` option along with file path regexp:
 
-### 0.1.6 - Oct 4, 2019
+```
+(uberdeps.api/package
+  deps
+  "target/project.jar"
+  {:mergers {#"(?i)README(\.md|\.txt)?" readme-merger}})
+```
 
-- Replace `\` with `/` when building on Windows #16 #17 thx @gnarroway
-
-### 0.1.5 - Oct 4, 2019
-
-- Ignore non-jar dependencies #14 #15
-
-### 0.1.4 - June 5, 2019
-
-- Package paths before jars so that local files take priority over deps #9
-
-### 0.1.3 - May 30, 2019
-
-- Fixed NPE when target is located in current dir #7
-
-### 0.1.2 - May 27, 2019
-
-- Make target dirs if don’t exist #4
-
-### 0.1.1 - May 3, 2019
-
-- Normalize dependencies without namespaces #3
-
-### 0.1.0 - April 29, 2019
-
-- Initial version
+Passing custom mergers does not remove the default ones, but you can override them.
 
 ## License
 

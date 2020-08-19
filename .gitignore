@@ -12,3 +12,4 @@ pom.xml.asc
 *.sublime-workspace
 .DS_Store
 .cpcache
+!test_projects/mergers/project_c.jar

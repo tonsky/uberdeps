@@ -1,0 +1,11 @@
+<component-set>
+    <components>
+        <component>
+            <role>org.apache.maven.wagon.Wagon</role>
+            <role-hint>gs</role-hint>
+            <description>
+                'Wagon' or "Wagon" or &lt;Wagon>?
+            </description>
+        </component>
+    </components>
+</component-set>
