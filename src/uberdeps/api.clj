@@ -15,8 +15,8 @@
    [java.util.regex Pattern]))
 
 
-(set! *warn-on-reflection* true)
-(set! *print-namespace-maps* false)
+; (set! *warn-on-reflection* true)
+; (set! *print-namespace-maps* false)
 
 
 (def ^:private ^:dynamic *seen-files)

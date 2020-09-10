@@ -1,3 +1,8 @@
+### 1.0.1 - Sep 10, 2020
+
+- Removed `(set! *print-namespace-maps*)` from code #29
+- tools.deps updated to 0.9.782
+
 ### 1.0.0 - Aug 19, 2020
 
 - Automatically merge `data_readers.clj` and `META-INF/plexus/components.xml`
