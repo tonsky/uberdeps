@@ -1,3 +1,7 @@
+### 1.0.2 - Sep 16, 2020
+
+- Exclude Emacs backup files by default #30
+
 ### 1.0.1 - Sep 10, 2020
 
 - Removed `(set! *print-namespace-maps*)` from code #29
