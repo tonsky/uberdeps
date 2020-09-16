@@ -38,7 +38,7 @@
   [#"project.clj"
    #"LICENSE"
    #"COPYRIGHT"
-   #".*\.pom"
+   #".*(\.pom|~)"
    #"module-info\.class"
    #"(?i)META-INF/.*\.(MF|SF|RSA|DSA)"
    #"(?i)META-INF/(INDEX\.LIST|DEPENDENCIES|NOTICE|LICENSE)(\.txt)?"])
