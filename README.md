@@ -52,7 +52,7 @@ clojure -m uberdeps.uberjar --deps-file ../deps.edn --target ../target/project.j
 To be clear:
 
 - `/uberdeps/deps.edn` is used only to start uberdeps. Files, paths, profiles from it won’t affect resulting archive in any way.
-- `/deps.edn` (referred as `--deps-file ../deps.edn` from `/uberdeps/packages.h`) is what’s analyzed during packaging. Its content determines what goes into the final archive. 
+- `/deps.edn` (referred as `--deps-file ../deps.edn` from `/uberdeps/package.sh`) is what’s analyzed during packaging. Its content determines what goes into the final archive. 
 
 In an ideal world, I’d prefer to have `/uberdeps.edn` next to `/deps.edn` in a top-level dir instead of `/uberdeps/deps.edn`. Unfortunately, `clj` / `clojure` bash scripts do not allow overriding `deps.edn` file path with anything else, that’s why extra `uberdeps` directory is needed.
 
