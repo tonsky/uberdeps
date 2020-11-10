@@ -102,7 +102,7 @@ deps.edn:
   ...
   :aliases {
     :uberdeps {
-      :extra-deps {uberdeps/uberdeps {:mvn/version "1.0.2"}}
+      :replace-deps {uberdeps/uberdeps {:mvn/version "1.0.2"}}
       :main-opts ["-m" "uberdeps.uberjar"]
     }
   }
@@ -117,7 +117,7 @@ clj -A:uberdeps
 
 In that case execution will happen like this:
 
-1. JVM will start with `:uberdeps` alias which will ADD `uberdeps` dependency to your app’s classpath.
+1. JVM will start with `:uberdeps` alias which will REPLACE all your normal dependencies on your app’s classpath with `uberdeps` dependency.
 2. `uberdeps.uberjar` namespace will be invoked as main namespace.
 3. Uberdeps process will read `deps.edn` AGAIN, this time figuring out what should go into archive. Note again, it doesn’t matter what’s on classpath of Uberdeps process. What matters is what it reads from `deps.edn` itself. Archive will not inherit any profiles enabled during execution, or any classpath resources, meaning, for example, that uberdeps won’t package its own classes to archive.
 4. Final archive is created, JVM exits.
@@ -136,12 +136,12 @@ Or add to your `~/.clojure/deps.edn`:
 
 ```clojure
 :aliases {
-  :uberjar {:extra-deps {uberdeps/uberdeps {:mvn/version "1.0.2"}}
+  :uberjar {:replace-deps {uberdeps/uberdeps {:mvn/version "1.0.2"}}
             :main-opts ["-m" "uberdeps.uberjar"]}
 }
 ```
 
-Both of these method will merge `uberdeps` with whatever is in your `deps.edn`, so at runtime it is an exact equivalent of “Quick and dirty” setup.
+Both of these method will replace whatever is in your `deps.edn` with `uberdeps`, so at runtime it is an exact equivalent of “Quick and dirty” setup.
 
 ## Using the generated uberjar
 
