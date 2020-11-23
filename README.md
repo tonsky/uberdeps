@@ -38,7 +38,7 @@ with following content:
 uberdeps/deps.edn:
 
 ```clojure
-{:deps {uberdeps/uberdeps {:mvn/version "1.0.2"}}}
+{:deps {uberdeps/uberdeps {:mvn/version "1.0.3"}}}
 ```
 
 uberdeps/package.sh:
@@ -46,7 +46,7 @@ uberdeps/package.sh:
 ```sh
 #!/bin/bash -e
 cd "$( dirname "${BASH_SOURCE[0]}" )"
-clojure -m uberdeps.uberjar --deps-file ../deps.edn --target ../target/project.jar
+clojure -M -m uberdeps.uberjar --deps-file ../deps.edn --target ../target/project.jar
 ```
 
 To be clear:
@@ -81,7 +81,7 @@ uberdeps/package.sh:
 ```sh
 #!/bin/bash -e
 cd "$( dirname "${BASH_SOURCE[0]}" )"
-clojure -m uberdeps.uberjar --deps-file ../deps.edn --target ../target/project.jar --aliases package:nrepl:...
+clojure -M -m uberdeps.uberjar --deps-file ../deps.edn --target ../target/project.jar --aliases package:nrepl:...
 ```
 
 ## Project setup — quick and dirty
@@ -102,7 +102,7 @@ deps.edn:
   ...
   :aliases {
     :uberdeps {
-      :replace-deps {uberdeps/uberdeps {:mvn/version "1.0.2"}}
+      :replace-deps {uberdeps/uberdeps {:mvn/version "1.0.3"}}
       :main-opts ["-m" "uberdeps.uberjar"]
     }
   }
@@ -129,14 +129,14 @@ You can invoke Uberdeps from command line at any time without any prior setup.
 Add to your bash aliases:
 
 ```sh
-clj -Sdeps '{:aliases {:uberjar {:replace-deps {uberdeps/uberdeps {:mvn/version "1.0.2"}}}}}' -M:uberjar -m uberdeps.uberjar
+clj -Sdeps '{:aliases {:uberjar {:replace-deps {uberdeps/uberdeps {:mvn/version "1.0.3"}}}}}' -M:uberjar -m uberdeps.uberjar
 ```
 
 Or add to your `~/.clojure/deps.edn`:
 
 ```clojure
 :aliases {
-  :uberjar {:replace-deps {uberdeps/uberdeps {:mvn/version "1.0.2"}}
+  :uberjar {:replace-deps {uberdeps/uberdeps {:mvn/version "1.0.3"}}
             :main-opts ["-m" "uberdeps.uberjar"]}
 }
 ```
@@ -160,7 +160,7 @@ Given your project has a `-main` function like below:
   (:gen-class))
 
 (defn -main [& args]
-      (println "Hello world"))
+  (println "Hello world"))
 ```
 
 You can create an executable jar with these steps:

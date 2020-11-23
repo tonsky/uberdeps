@@ -1,3 +1,8 @@
+### 1.0.3 - Nov 23, 2020
+
+- Fix relative paths issue when deps.edn is a symlink #35 thx @imrekoszo
+- tools.deps updated to 0.9.833
+
 ### 1.0.2 - Sep 16, 2020
 
 - Exclude Emacs backup files by default #30

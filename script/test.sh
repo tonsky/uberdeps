@@ -2,4 +2,4 @@
 
 cd "`dirname $0`/.."
 
-clj -A:test -m uberdeps.test
+clj -A:test -M -m uberdeps.test
