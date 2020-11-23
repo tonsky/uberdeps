@@ -17,7 +17,7 @@
 
 (defn -main [& args]
   (let [deps-file (or (get-option-value args "--deps-file") "deps.edn")
-        deps-dir  (-> (io/file deps-file) (.getCanonicalFile) (.getParentFile))
+        deps-dir  (-> (io/file deps-file) (.getAbsoluteFile) (.getParentFile))
         target    (or (get-option-value args "--target")
                     (as-> (io/file ".") %
                       (.getCanonicalFile %)
