@@ -113,7 +113,7 @@ deps.edn:
 and invoke it like this:
 
 ```sh
-clj -A:uberdeps
+clj -M:uberdeps
 ```
 
 In that case execution will happen like this:
@@ -179,10 +179,10 @@ Make sure you have Clojure as a dependency—uberdeps won’t automatically add 
 {:deps {org.clojure/clojure {:mvn/version "1.10.0"}, ...}}
 
 # 3. Aot compile
-clj -e "(compile 'app.core)"
+clj -M -e "(compile 'app.core)"
 
 # 4. Uberjar with --main-class option
-clojure -A:uberjar --main-class app.core
+clojure -M:uberjar --main-class app.core
 ```
 
 This will create a manifest in the jar under META-INF/MANIFEST.MF, which then allows you to run your jar directly:
