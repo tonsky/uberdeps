@@ -233,7 +233,7 @@
 
 (defn package-paths [deps-map out]
   (let [paths (concat
-                (:paths deps-map)
+                (:paths deps-map ["src"])
                 (:extra-paths (:args-map deps-map)))]
     (doseq [path (sort paths)]
       (binding [context (str path "/**")]
