@@ -145,6 +145,23 @@ Lifecycle &amp; Mapping
     (is (re-find #"Multi-Release: true" (find-content jar "META-INF/MANIFEST.MF")))))
 
 
+; see https://github.com/tonsky/uberdeps/pull/39
+(deftest test-defaults
+  (api/package
+    '{:deps
+      {tongue/tongue {:mvn/version "0.2.10"} ;; clojars
+       com.cognitect/transit-clj {:mvn/version "1.0.324"}}} ;; maven central
+    jar-path)
+
+  (let [jar (read-jar jar-path)]
+    (is (clojure.set/subset?
+          #{"uberdeps/uberjar.clj"   ;; :paths ["src"]
+            "tongue/core.cljc"       ;; clojars
+            "cognitect/transit.clj"  ;; maven central
+            "clojure/core.clj"}      ;; clojure
+          (into #{} (map :name) jar)))))
+
+
 (defn -main [& args]
   (test/run-all-tests #"uberdeps\.test")
   #_(test/test-ns 'uberdeps.test))

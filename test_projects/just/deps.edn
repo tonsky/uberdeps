@@ -1,0 +1,8 @@
+{ :paths ["src"]
+  :aliases {
+    :uberdeps {
+      :replace-deps {uberdeps/uberdeps {:mvn/version "1.0.3"}}
+      :main-opts ["-m" "uberdeps.uberjar"]
+    }
+  }
+}

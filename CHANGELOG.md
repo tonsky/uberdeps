@@ -1,3 +1,8 @@
+### 1.0.4 - Jan 7, 2021
+
+- Set default :paths to ["src"] #39
+- tools.deps updated to 0.9.857
+
 ### 1.0.3 - Nov 23, 2020
 
 - Fix relative paths issue when deps.edn is a symlink #35 thx @imrekoszo
