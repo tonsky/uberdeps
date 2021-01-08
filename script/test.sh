@@ -1,4 +1,4 @@
-#!/bin/zsh -euo pipefail
+#!/bin/sh -eu
 
 cd "`dirname $0`/.."
 
