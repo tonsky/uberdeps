@@ -110,7 +110,7 @@ deps.edn:
 }
 ```
 
-and invoke it like this:
+and invoke it like this (requires clj >= 1.10.1.672):
 
 ```sh
 clj -M:uberdeps
