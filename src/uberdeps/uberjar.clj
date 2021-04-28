@@ -6,6 +6,13 @@
    [clojure.java.io :as io]
    [clojure.tools.deps.alpha.util.dir :as deps.dir]))
 
+(defn get-options [args]
+  (->> args
+       (partition 2)
+       (group-by first)
+       (map (fn [[option v]]
+              [option (map second v)]))
+       (into {})))
 
 (defn get-option-value [args option]
   (->> args (drop-while #(not= % option)) second))
@@ -13,7 +20,6 @@
 
 (defn get-option [args option]
   (some #(= option %) args))
-
 
 (defn -main [& args]
   (let [deps-file (or (get-option-value args "--deps-file") "deps.edn")
@@ -28,8 +34,11 @@
                     (->> (remove str/blank?)
                       (map keyword)
                       (into #{})))
+        parsed-args (get-options args)
+        exclusions (map re-pattern (parsed-args "--exclude"))
         opts      {:main-class     (get-option-value args "--main-class")
                    :multi-release? (get-option args "--multi-release")
+                   :exclusions     exclusions
                    :aliases        aliases}
         level     (or (some-> (get-option-value args "--level") keyword)
                     :debug)]
