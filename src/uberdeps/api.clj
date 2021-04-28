@@ -26,13 +26,14 @@
 (def ^:private ^:dynamic mergers)
 (def ^:private ^:dynamic context)
 (def ^:private ^:dynamic indent "")
+(def ^:dynamic exclusions)
 
 
 (def ^:dynamic level :debug) ; :debug :info :warn :error
 
 
 ; from https://github.com/seancorfield/depstar/blob/06eb9dea599840b38ec493669c89de5aa1ff2eba/src/hf/depstar/uberjar.clj
-(def ^:dynamic exclusions
+(def default-exclusions
   "Filename patterns to exclude. These are checked with re-matches and
   should therefore be complete filename matches including any path."
   [#"project.clj"
@@ -293,7 +294,8 @@
                *seen-libs  (atom #{})
                *mkdirs     (atom #{})
                *mergeables (atom {})
-               mergers     (merge default-mergers (:mergers opts))]
+               mergers     (merge default-mergers (:mergers opts))
+               exclusions  (into default-exclusions (:exclusions opts))]
        (when-let [p (.getParentFile (io/file target))]
          (.mkdirs p))
        (with-open [out (JarOutputStream. (BufferedOutputStream. (FileOutputStream. target)))]
