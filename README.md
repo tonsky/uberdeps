@@ -201,6 +201,7 @@ Supported command-line options are:
 --deps-file <file>                Which deps.edn file to use to build classpath. Defaults to 'deps.edn'
 --aliases <alias:alias:...>       Colon-separated list of alias names to include from deps file. Defaults to nothing
 --target <file>                   Jar file to ouput to. Defaults to 'target/<directory-name>.jar'
+--exclude <regexp>                Exclude files that match one or more of the Regular Expression given. Can be used multiple times
 --main-class <ns>                 Main class, if it exists (e.g. app.core)
 --multi-release                   Add Multi-Release: true to the manifest. Off by default.
 --level (debug|info|warn|error)   Verbose level. Defaults to debug

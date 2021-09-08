@@ -1,10 +1,10 @@
 (ns uberdeps.uberjar
   (:require
    [clojure.edn :as edn]
-   [uberdeps.api :as api]
-   [clojure.string :as str]
    [clojure.java.io :as io]
-   [clojure.tools.deps.alpha.util.dir :as deps.dir]))
+   [clojure.string :as str]
+   [clojure.tools.deps.alpha.util.dir :as deps.dir]
+   [uberdeps.api :as api]))
 
 (defn get-options [args]
   (->> args
@@ -14,36 +14,31 @@
               [option (map second v)]))
        (into {})))
 
-(defn get-option-value [args option]
-  (->> args (drop-while #(not= % option)) second))
-
-
-(defn get-option [args option]
-  (some #(= option %) args))
-
 (defn -main [& args]
-  (let [deps-file (or (get-option-value args "--deps-file") "deps.edn")
-        deps-dir  (-> (io/file deps-file) (.getAbsoluteFile) (.getParentFile))
-        target    (or (get-option-value args "--target")
-                    (as-> (io/file ".") %
-                      (.getCanonicalFile %)
-                      (.getName %)
-                      (str "target/" % ".jar")))
-        aliases   (-> (or (get-option-value args "--aliases") "")
-                    (str/split  #":")
-                    (->> (remove str/blank?)
-                      (map keyword)
-                      (into #{})))
-        parsed-args (get-options args)
+  (let [parsed-args (get-options args)
+        deps-file (first (parsed-args "--deps-file" ["deps.edn"]))
+        deps-dir  (-> (io/file deps-file)
+                      (.getAbsoluteFile)
+                      (.getParentFile))
+        target    (or (first (parsed-args "--target"))
+                      (as-> (io/file ".") %
+                            (.getCanonicalFile %)
+                            (.getName %)
+                            (str "target/" % ".jar")))
+        aliases   (-> (first (parsed-args "--aliases" [""]))
+                      (str/split  #":")
+                      (->> (remove str/blank?)
+                         (map keyword)
+                         (into #{})))
         exclusions (map re-pattern (parsed-args "--exclude"))
-        opts      {:main-class     (get-option-value args "--main-class")
-                   :multi-release? (get-option args "--multi-release")
-                   :exclusions     exclusions
-                   :aliases        aliases}
-        level     (or (some-> (get-option-value args "--level") keyword)
-                    :debug)]
+        opts {:main-class     (first (parsed-args "--main-class"))
+              :multi-release? (contains? (set args) "--multi-release")
+              :exclusions     exclusions
+              :aliases        aliases}
+        level     (or (some-> (first (parsed-args "--level")) keyword)
+                      :debug)]
     (binding [api/level level]
-      (deps.dir/with-dir deps-dir 
+      (deps.dir/with-dir deps-dir
         (api/package
           (edn/read-string (slurp deps-file))
           target
