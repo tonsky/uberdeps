@@ -1,3 +1,8 @@
+### 1.1.0 - Sep 8, 2021
+
+- Added --exclude CLI option #44 thx @Heliosmaster
+- tools.deps updated to 0.12.1036
+
 ### 1.0.4 - Jan 7, 2021
 
 - Set default :paths to ["src"] #39
