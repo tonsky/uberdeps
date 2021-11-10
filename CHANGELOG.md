@@ -1,3 +1,7 @@
+### 1.1.1 - Nov 10, 2021
+
+- Munge main class name before adding to META-INF/MANIFEST.MF #45 via @mvproton
+
 ### 1.1.0 - Sep 8, 2021
 
 - Added --exclude CLI option #44 thx @Heliosmaster
