@@ -218,15 +218,11 @@
       (throw (ex-info (str ":( Unknown entity at classpath: " path) {:path path})))))
 
 
-(defn- normalize-class-name [^String class-name]
-  (.replace class-name \- \_))
-
-
 (defn package-manifest [opts out]
   (let [manifest (str "Manifest-Version: 1.0\n"
                    "Created-By: " (System/getProperty "java.version") " (" (System/getProperty "java.vm.vendor") ")\n"
                    (when-some [main-class (:main-class opts)]
-                     (format "Main-Class: %s\n" (normalize-class-name main-class)))
+                     (format "Main-Class: %s\n" (clojure.lang.Compiler/munge main-class)))
                    (when (:multi-release? opts)
                      (format "Multi-Release: true\n")))
         in       (io/input-stream (.getBytes manifest "UTF-8"))]
