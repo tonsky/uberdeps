@@ -1,3 +1,8 @@
+### 1.1.2 - Jan 4, 2022
+
+- Support `:replace-deps` and `:replace-paths` in `--aliases` #46
+- tools.deps updated to 0.12.1104
+
 ### 1.1.1 - Nov 10, 2021
 
 - Munge main class name before adding to META-INF/MANIFEST.MF #45 via @mvproton

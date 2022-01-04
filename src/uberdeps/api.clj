@@ -119,9 +119,9 @@
   (let [deps-map (deps/merge-edns
                    [(deps/root-deps)
                     (@#'deps/canonicalize-all-syms deps)])]
-    (-> deps-map
-      (dissoc :aliases)
-      (assoc :args-map (deps/combine-aliases deps-map aliases)))))
+    (deps/tool
+      (dissoc deps-map :aliases)
+      (deps/combine-aliases deps-map aliases))))
 
 
 (defn- merger [path]
@@ -230,14 +230,11 @@
 
 
 (defn package-paths [deps-map out]
-  (let [paths (concat
-                (:paths deps-map)
-                (:extra-paths (:args-map deps-map)))]
-    (doseq [path (sort paths)]
-      (binding [context (str path "/**")]
-        (when (#{:debug} level)
-          (println (str "+ " context)))
-        (package* path out)))))
+  (doseq [path (sort (:paths deps-map))]
+    (binding [context (str path "/**")]
+      (when (#{:debug} level)
+        (println (str "+ " context)))
+      (package* path out))))
 
 
 (defn- lib-coord [coord]
@@ -264,7 +261,7 @@
 
 (defn package-libs [deps-map out]
   (let [lib-map (->>
-                  (deps/resolve-deps deps-map (:args-map deps-map))
+                  (deps/resolve-deps deps-map nil)
                   (remove (fn [[_ deps-map]] (contains? deps-map :extension))) ;; remove non-jar deps (https://github.com/tonsky/uberdeps/issues/14 https://github.com/tonsky/uberdeps/pull/15)
                   (into (sorted-map)))]
     (doseq [[lib coord] lib-map
