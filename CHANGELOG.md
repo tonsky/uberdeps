@@ -1,3 +1,8 @@
+### 1.1.3 - Feb 23, 2022
+
+- Fixed :extra-paths being ignored #47
+- tools.deps updated to 0.12.1153
+
 ### 1.1.2 - Jan 4, 2022
 
 - Support `:replace-deps` and `:replace-paths` in `--aliases` #46

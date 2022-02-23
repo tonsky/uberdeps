@@ -1,22 +1,21 @@
 (ns uberdeps.test
   (:require
-   [clojure.edn :as edn]
-   [clojure.java.io :as io]
-   [clojure.string :as str]
-   [clojure.test :as test :refer [deftest is are testing use-fixtures]]
-   [uberdeps.api :as api])
+    [clojure.edn :as edn]
+    [clojure.java.io :as io]
+    [clojure.set :as set]
+    [clojure.string :as str]
+    [clojure.test :as test :refer [deftest is are testing use-fixtures]]
+    [uberdeps.api :as api])
   (:import
-   [java.io File FileInputStream BufferedInputStream]
-   [java.util.zip ZipInputStream]))
-
+    [java.io File FileInputStream BufferedInputStream]
+    [java.util.zip ZipInputStream]))
 
 (def jar-path "target/test.jar")
 
-
-(use-fixtures :each (fn [f]
-                      (io/delete-file jar-path true)
-                      (f)))
-
+(use-fixtures :each
+  (fn [f]
+    (io/delete-file jar-path true)
+    (f)))
 
 (defn read-jar [path]
   (with-open [in (ZipInputStream. (BufferedInputStream. (FileInputStream. (io/file path))))]
@@ -35,16 +34,13 @@
                      :content       (@#'api/slurp-stream in)}]
           (recur (.getNextEntry in) (conj acc entry)))))))
 
-
 (defn find-file [jar path]
   (let [files (filter #(= path (:name %)) jar)]
     (is (= 1 (count files)))
     (first files)))
 
-
 (defn find-content [jar path]
   (:content (find-file jar path)))
-
 
 (deftest test-mergers
   (api/package
@@ -68,7 +64,7 @@
                project-b b
                project-c c
                common    C}
-             (-> (find-content jar "data_readers.clj") (edn/read-string)))))
+            (-> (find-content jar "data_readers.clj") (edn/read-string)))))
 
     (testing "services"
       (is (= "common_a\nproject_a\ncommon_b\nproject_b\ncommon_c\nproject_c"
@@ -82,7 +78,7 @@
 
     (testing "components"
       (is (=
-"<?xml version='1.0' encoding='UTF-8'?>
+            "<?xml version='1.0' encoding='UTF-8'?>
 <component-set>
 <components>
 <component>
@@ -118,7 +114,6 @@ Lifecycle &amp; Mapping
       (is (= "PROJECT A README\nPROJECT B README\nPROJECT C README"
             (find-content jar "README.md"))))))
 
-
 ; see https://github.com/tonsky/uberdeps/issues/3
 (deftest test-overrides
   (api/package
@@ -131,7 +126,6 @@ Lifecycle &amp; Mapping
     (let [files (filter #(= "cheshire/core.clj" (:name %)) jar)]
       (is (= 1 (count files))))))
 
-
 ; see https://github.com/tonsky/uberdeps/issues/22
 (deftest test-multi-release
   (api/package
@@ -143,7 +137,6 @@ Lifecycle &amp; Mapping
 
   (let [jar (read-jar jar-path)]
     (is (re-find #"Multi-Release: true" (find-content jar "META-INF/MANIFEST.MF")))))
-
 
 ; see https://github.com/tonsky/uberdeps/pull/39
 (deftest test-defaults
@@ -161,6 +154,21 @@ Lifecycle &amp; Mapping
             "clojure/core.clj"}      ;; clojure
           (into #{} (map :name) jar)))))
 
+; see https://github.com/tonsky/uberdeps/issues/47
+(deftest test-extra-paths
+  (api/package
+    '{:paths   ["src" "test_projects/extra_paths/other"]
+      :deps    {}
+      :aliases {:extra {:extra-paths ["test_projects/extra_paths/extra"]}}}
+    jar-path
+    {:aliases #{:extra}})
+
+  (let [jar (read-jar jar-path)
+        expected #{"uberdeps/uberjar.clj" ;; :paths ["src"]
+                   "other.txt"            ;; :paths ["extra_paths/other"]
+                   "extra.txt"}           ;; :paths ["extra_paths/extra"]
+        paths (into #{} (map :name) jar)]
+    (is (= expected (set/intersection paths expected)))))
 
 (defn -main [& args]
   (test/run-all-tests #"uberdeps\.test")

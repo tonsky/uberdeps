@@ -1,18 +1,18 @@
 (ns uberdeps.api
   (:require
-   [clojure.edn :as edn]
-   [clojure.java.io :as io]
-   [clojure.string :as str]
-   [clojure.tools.deps.alpha :as deps]
-   [clojure.tools.deps.alpha.util.dir :as deps.dir]
-   [clojure.xml :as xml]
-   [clojure.zip :as zip])
+    [clojure.edn :as edn]
+    [clojure.java.io :as io]
+    [clojure.string :as str]
+    [clojure.tools.deps.alpha :as deps]
+    [clojure.tools.deps.alpha.util.dir :as deps.dir]
+    [clojure.xml :as xml]
+    [clojure.zip :as zip])
   (:import
-   [java.io File InputStream FileInputStream FileOutputStream BufferedInputStream BufferedOutputStream ByteArrayInputStream ByteArrayOutputStream]
-   [java.nio.file.attribute FileTime]
-   [java.time Instant]
-   [java.util.jar JarEntry JarInputStream JarOutputStream]
-   [java.util.regex Pattern]))
+    [java.io File InputStream FileInputStream FileOutputStream BufferedInputStream BufferedOutputStream ByteArrayInputStream ByteArrayOutputStream]
+    [java.nio.file.attribute FileTime]
+    [java.time Instant]
+    [java.util.jar JarEntry JarInputStream JarOutputStream]
+    [java.util.regex Pattern]))
 
 
 ; (set! *warn-on-reflection* true)
@@ -45,7 +45,7 @@
    #"(?i)META-INF/(INDEX\.LIST|DEPENDENCIES|NOTICE|LICENSE)(\.txt)?"
 
    #".*~" ;; #30 Emacs backup files
-])
+   ])
 
 
 (defn- escape-html [s]
@@ -115,13 +115,24 @@
    #"data_readers.clj[cs]?"         clojure-maps-merger})
 
 
+(def ^:private append-unique (comp vec distinct concat))
+
+
 (defn- deps-map [deps {:keys [aliases]}]
   (let [deps-map (deps/merge-edns
                    [(deps/root-deps)
                     (@#'deps/canonicalize-all-syms deps)])]
-    (deps/tool
+    (reduce
+      (fn [m {:keys [deps replace-deps extra-deps paths replace-paths extra-paths]}]
+        (cond-> m
+          deps          (assoc  :deps  deps)
+          replace-deps  (assoc  :deps  replace-deps)
+          extra-deps    (update :deps  merge extra-deps)
+          paths         (assoc  :paths paths)
+          replace-paths (assoc  :paths replace-paths)
+          extra-paths   (update :paths append-unique extra-paths)))
       (dissoc deps-map :aliases)
-      (deps/combine-aliases deps-map aliases))))
+      (map (:aliases deps-map) aliases))))
 
 
 (defn- merger [path]
