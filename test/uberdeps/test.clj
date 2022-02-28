@@ -157,9 +157,9 @@ Lifecycle &amp; Mapping
 ; see https://github.com/tonsky/uberdeps/issues/47
 (deftest test-extra-paths
   (api/package
-    '{:paths   ["src" "test_projects/extra_paths/other"]
-      :deps    {}
-      :aliases {:extra {:extra-paths ["test_projects/extra_paths/extra"]}}}
+    {:paths   ["src" "test_projects/extra_paths/other"]
+     :deps    {}
+     :aliases {:extra {:extra-paths ["test_projects/extra_paths/extra"]}}}
     jar-path
     {:aliases #{:extra}})
 
@@ -169,6 +169,27 @@ Lifecycle &amp; Mapping
                    "extra.txt"}           ;; :paths ["extra_paths/extra"]
         paths (into #{} (map :name) jar)]
     (is (= expected (set/intersection paths expected)))))
+
+; see https://github.com/tonsky/uberdeps/issues/48
+(deftest test-paths-order
+  (let [deps {:paths ["p3" "p1" "p2"] 
+              :aliases {:a {:paths         ["ap3" "ap1" "ap2"]
+                            :replace-paths ["ar3" "ar1" "ar2"]
+                            :extra-paths   ["ae3" "ae1" "ae2"]}
+                        :b {:paths         ["bp3" "bp1" "bp2"]
+                            :replace-paths ["br3" "br1" "br2"]
+                            :extra-paths   ["be3" "be1" "be2"]}
+                        :c {:extra-paths   ["ce3" "ce1" "ce2"]}
+                        :d {:extra-paths   ["de3" "de1" "de2"]}}}]
+    (is (= ["ae3" "ae1" "ae2" "be3" "be1" "be2" "ap3" "ap1" "ap2" "bp3" "bp1" "bp2" "ar3" "ar1" "ar2" "br3" "br1" "br2"]
+          (:paths (api/deps-map deps {:aliases [:a :b]}))))
+    (is (= ["be3" "be1" "be2" "ae3" "ae1" "ae2" "bp3" "bp1" "bp2" "ap3" "ap1" "ap2" "br3" "br1" "br2" "ar3" "ar1" "ar2"]
+          (:paths (api/deps-map deps {:aliases [:b :a]}))))
+    (is (= ["ce3" "ce1" "ce2" "de3" "de1" "de2" "p3" "p1" "p2"]
+          (:paths (api/deps-map deps {:aliases [:c :d]}))))
+    (is (= ["de3" "de1" "de2" "ce3" "ce1" "ce2" "p3" "p1" "p2"]
+          (:paths (api/deps-map deps {:aliases [:d :c]}))))))
+
 
 (defn -main [& args]
   (test/run-all-tests #"uberdeps\.test")

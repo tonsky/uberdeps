@@ -1,3 +1,7 @@
+### 1.1.4 - Feb 28, 2022
+
+- Do not sort :paths, match ordering from tools.deps instead #48
+
 ### 1.1.3 - Feb 23, 2022
 
 - Fixed :extra-paths being ignored #47

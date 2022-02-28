@@ -115,24 +115,34 @@
    #"data_readers.clj[cs]?"         clojure-maps-merger})
 
 
-(def ^:private append-unique (comp vec distinct concat))
+(defn- append-unique [xs ys]
+  (if (and xs ys)
+    (vec (distinct (concat xs ys)))
+    (or xs ys)))
 
 
-(defn- deps-map [deps {:keys [aliases]}]
-  (let [deps-map (deps/merge-edns
-                   [(deps/root-deps)
-                    (@#'deps/canonicalize-all-syms deps)])]
-    (reduce
-      (fn [m {:keys [deps replace-deps extra-deps paths replace-paths extra-paths]}]
-        (cond-> m
-          deps          (assoc  :deps  deps)
-          replace-deps  (assoc  :deps  replace-deps)
-          extra-deps    (update :deps  merge extra-deps)
-          paths         (assoc  :paths paths)
-          replace-paths (assoc  :paths replace-paths)
-          extra-paths   (update :paths append-unique extra-paths)))
-      (dissoc deps-map :aliases)
-      (map (:aliases deps-map) aliases))))
+(defn deps-map [deps {:keys [aliases]}]
+  (let [deps-map          (deps/merge-edns
+                            [(deps/root-deps)
+                             (@#'deps/canonicalize-all-syms deps)])
+        alias-maps        (mapv (:aliases deps-map) aliases)
+        replace-deps-old  (reduce #(merge %1 (:deps %2)) nil alias-maps)
+        replace-deps      (reduce #(merge %1 (:replace-deps %2)) nil alias-maps)
+        extra-deps        (reduce #(merge %1 (:extra-deps %2)) nil alias-maps)
+        replace-paths-old (reduce #(append-unique %1 (:paths %2)) nil alias-maps)
+        replace-paths     (reduce #(append-unique %1 (:replace-paths %2)) nil alias-maps)
+        extra-paths       (reduce #(append-unique %1 (:extra-paths %2)) nil alias-maps)]
+    (-> deps-map
+      (dissoc :aliases)
+      (update :deps #(merge
+                       (if (or replace-deps-old replace-deps)
+                         (merge replace-deps-old replace-deps)
+                         %)
+                       extra-deps))
+      (update :paths #(append-unique extra-paths
+                        (if (or replace-paths-old replace-paths)
+                          (append-unique replace-paths-old replace-paths)
+                          %))))))
 
 
 (defn- merger [path]
@@ -241,7 +251,7 @@
 
 
 (defn package-paths [deps-map out]
-  (doseq [path (sort (:paths deps-map))]
+  (doseq [path (:paths deps-map)]
     (binding [context (str path "/**")]
       (when (#{:debug} level)
         (println (str "+ " context)))
