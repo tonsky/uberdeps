@@ -212,11 +212,11 @@ Supported command-line options are:
 ```clojure
 (require '[uberdeps.api :as uberdeps])
 
-(let [exclusions (into uberdeps/exclusions [#"\.DS_Store" #".*\.cljs" #"cljsjs/.*"])
+(let [exclusions [#"\.DS_Store" #".*\.cljs" #"cljsjs/.*"]
       deps       (clojure.edn/read-string (slurp "deps.edn"))]
-  (binding [uberdeps/exclusions exclusions
-            uberdeps/level      :warn]
-    (uberdeps/package deps "target/uber.jar" {:aliases #{:uberjar}})))
+  (binding [uberdeps/level      :warn]
+    (uberdeps/package deps "target/uber.jar" {:aliases #{:uberjar}
+                                              :exclusions exclusions})))
 ```
 
 ## Merging
