@@ -1,3 +1,10 @@
+### 1.2.0 - Dec 28, 2022
+
+- auto-detect `--multi-release` from jars content
+- exclude `module-info.class` from any folder
+- clojure updated to 1.11.1
+- tools.deps updated to 0.16.1264
+
 ### 1.1.4 - Feb 28, 2022
 
 - Do not sort :paths, match ordering from tools.deps instead #48

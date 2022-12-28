@@ -3,8 +3,8 @@
     [clojure.edn :as edn]
     [clojure.java.io :as io]
     [clojure.string :as str]
-    [clojure.tools.deps.alpha :as deps]
-    [clojure.tools.deps.alpha.util.dir :as deps.dir]
+    [clojure.tools.deps :as deps]
+    [clojure.tools.deps.util.dir :as deps.dir]
     [clojure.xml :as xml]
     [clojure.zip :as zip])
   (:import
@@ -39,11 +39,11 @@
   [#"project.clj"
    #"LICENSE"
    #"COPYRIGHT"
+   #".DS_Store"
    #".*\.pom"
-   #"module-info\.class"
+   #"(.*/)?module-info\.class"
    #"(?i)META-INF/.*\.(MF|SF|RSA|DSA)"
    #"(?i)META-INF/(INDEX\.LIST|DEPENDENCIES|NOTICE|LICENSE)(\.txt)?"
-
    #".*~" ;; #30 Emacs backup files
    ])
 
@@ -240,11 +240,13 @@
 
 
 (defn package-manifest [opts out]
-  (let [manifest (str "Manifest-Version: 1.0\n"
+  (let [multi-release? (or (:multi-release? opts) 
+                         (some #(str/starts-with? % "META-INF/versions/") (keys @*seen-files)))
+        manifest (str "Manifest-Version: 1.0\n"
                    "Created-By: " (System/getProperty "java.version") " (" (System/getProperty "java.vm.vendor") ")\n"
                    (when-some [main-class (:main-class opts)]
                      (format "Main-Class: %s\n" (clojure.lang.Compiler/munge main-class)))
-                   (when (:multi-release? opts)
+                   (when multi-release?
                      (format "Multi-Release: true\n")))
         in       (io/input-stream (.getBytes manifest "UTF-8"))]
     (copy-stream in "META-INF/MANIFEST.MF" (FileTime/from (Instant/now)) out)))
@@ -317,9 +319,9 @@
        (when-let [p (.getParentFile (io/file target))]
          (.mkdirs p))
        (with-open [out (JarOutputStream. (BufferedOutputStream. (FileOutputStream. target)))]
-         (package-manifest opts out)
          (package-paths deps-map out)
          (package-libs deps-map out)
-         (package-mergeables out)))
+         (package-mergeables out)
+         (package-manifest opts out)))
      (when (#{:debug :info} level)
        (println (str "[uberdeps] Packaged " target " in " (- (System/currentTimeMillis) t0) " ms"))))))

@@ -3,7 +3,7 @@
    [clojure.edn :as edn]
    [clojure.java.io :as io]
    [clojure.string :as str]
-   [clojure.tools.deps.alpha.util.dir :as deps.dir]
+   [clojure.tools.deps.util.dir :as deps.dir]
    [uberdeps.api :as api]))
 
 (defn get-options [args]
