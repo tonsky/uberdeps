@@ -2,4 +2,4 @@
 
 cd "`dirname $0`/.."
 
-clj -A:test -M -m uberdeps.test
+clojure -A:test -M -m uberdeps.test

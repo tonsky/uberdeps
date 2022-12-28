@@ -1,0 +1,53 @@
+name: Build and deploy
+
+on:
+  push:
+    branches:
+      - '**'
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+    paths:
+      - 'src/**'
+      - 'test/**'
+      - 'test_projects/**'
+      - project.clj
+      - deps.edn
+
+jobs:  
+  build:
+    runs-on: ubuntu-22.04
+
+    env:
+      CLOJARS_TOKEN: ${{ secrets.CLOJARS_DEPLOY_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - run: |
+          echo "JAVA_HOME=$JAVA_HOME_11_X64" >> $GITHUB_ENV
+          echo "JAVA8_HOME=$JAVA_HOME_8_X64" >> $GITHUB_ENV
+          echo "$JAVA_HOME_11_X64/bin" >> $GITHUB_PATH
+
+      - name: Setup Clojure
+        uses: DeLaGuardo/setup-clojure@10.0
+        with:
+          cli: 1.11.1.1200
+      
+      - run: ./script/test.sh
+
+      - if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        name: Set version
+        run: |
+          sed -i 's/"0.0.0"/"${{ github.ref_name }}"/g' project.clj
+
+      - run: lein jar
+
+      - if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        name: Deploy to Clojars
+        run: |
+          lein deploy clojars
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: jar
+          path: 'target/*.jar'
