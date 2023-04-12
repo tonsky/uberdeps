@@ -10,7 +10,8 @@
     [java.io File FileInputStream BufferedInputStream]
     [java.util.zip ZipInputStream]))
 
-(def jar-path "target/test.jar")
+(def jar-path 
+  "target/test.jar")
 
 (use-fixtures :each
   (fn [f]
@@ -59,12 +60,21 @@
 
   (let [jar (read-jar jar-path)]
     (testing "data_readers"
+      (is (= ["data_readers.cljc"] (filter #(= "data_readers.cljc" %) (map :name jar))))
+      (is (= "{project-a a
+ common A
+ project-b #?{:clj clj-b :cljs cljs-b}
+ #?@{:clj [clj-only clj]}
+ #?@{:cljs [cljs-only cljs]}
+ common B}"
+            (find-content jar "data_readers.cljc")))
+      
       (is (= ["data_readers.clj"] (filter #(= "data_readers.clj" %) (map :name jar))))
-      (is (= '{project-a a
-               project-b b
-               project-c c
-               common    C}
-            (-> (find-content jar "data_readers.clj") (edn/read-string)))))
+      (is (= "{project-a a
+ common A
+ project-c c
+ common C}"
+            (find-content jar "data_readers.clj"))))
 
     (testing "services"
       (is (= "common_a\nproject_a\ncommon_b\nproject_b\ncommon_c\nproject_c"

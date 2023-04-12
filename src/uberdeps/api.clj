@@ -39,7 +39,7 @@
   [#"project.clj"
    #"LICENSE"
    #"COPYRIGHT"
-   #".DS_Store"
+   #"\.DS_Store"
    #".*\.pom"
    #"(.*/)?module-info\.class"
    #"(?i)META-INF/.*\.(MF|SF|RSA|DSA)"
@@ -104,15 +104,22 @@
    (fn [acc] acc)})
 
 
-(def clojure-maps-merger
-  {:collect (fn [acc content] (merge acc (edn/read-string content)))
-   :combine (fn [acc] (pr-str acc))})
+(def data-readers-merger
+  {:collect
+   (fn [acc content]
+     (conj (or acc [])
+       (second
+         (re-matches #"(?ms)\s*\{(.*)\}\s*" content))))
+   :combine
+   (fn [acc]
+     (str "{" (str/join "\n " acc) "}"))})
+
 
 
 (def default-mergers
   {"META-INF/plexus/components.xml" components-merger
    #"META-INF/services/.*"          services-merger   
-   #"data_readers.clj[cs]?"         clojure-maps-merger})
+   #"data_readers\.cljc?"           data-readers-merger})
 
 
 (defn- append-unique [xs ys]

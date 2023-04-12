@@ -4,7 +4,7 @@
   :url         "https://github.com/tonsky/uberdeps"
   :dependencies
   [[org.clojure/clojure "1.11.1"]
-   [org.clojure/tools.deps "0.16.1264"]]
+   [org.clojure/tools.deps "0.18.1335"]]
   :deploy-repositories
   {"clojars"
    {:url "https://clojars.org/repo"

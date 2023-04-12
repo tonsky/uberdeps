@@ -1,3 +1,8 @@
+### 1.3.0 - Apr 12, 2022
+
+- Fix merging data_readers.cljc with reader conditionals #51
+- tools.deps updated to 0.18.1335
+
 ### 1.2.0 - Dec 28, 2022
 
 - auto-detect `--multi-release` from jars content
