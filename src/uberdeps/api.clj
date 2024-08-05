@@ -135,6 +135,7 @@
         alias-maps        (mapv (:aliases deps-map) aliases)
         replace-deps-old  (reduce #(merge %1 (:deps %2)) nil alias-maps)
         replace-deps      (reduce #(merge %1 (:replace-deps %2)) nil alias-maps)
+        override-deps     (reduce #(merge %1 (:override-deps %2)) nil alias-maps)
         extra-deps        (reduce #(merge %1 (:extra-deps %2)) nil alias-maps)
         replace-paths-old (reduce #(append-unique %1 (:paths %2)) nil alias-maps)
         replace-paths     (reduce #(append-unique %1 (:replace-paths %2)) nil alias-maps)
@@ -145,6 +146,7 @@
                        (if (or replace-deps-old replace-deps)
                          (merge replace-deps-old replace-deps)
                          %)
+                       override-deps
                        extra-deps))
       (update :paths #(append-unique extra-paths
                         (if (or replace-paths-old replace-paths)
