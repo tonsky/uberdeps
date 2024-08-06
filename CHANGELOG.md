@@ -1,3 +1,7 @@
+### 1.4.0 - Aug 6, 2024
+
+- Merge :override-deps from :aliases #49 #53 via @dkick
+
 ### 1.3.0 - Apr 12, 2022
 
 - Fix merging data_readers.cljc with reader conditionals #51

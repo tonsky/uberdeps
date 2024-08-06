@@ -7,6 +7,7 @@ on:
     tags:
       - '[0-9]+.[0-9]+.[0-9]+'
     paths:
+      - '.github/workflows/**'
       - 'src/**'
       - 'test/**'
       - 'test_projects/**'
@@ -15,23 +16,22 @@ on:
 
 jobs:  
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     env:
       CLOJARS_TOKEN: ${{ secrets.CLOJARS_DEPLOY_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - run: |
-          echo "JAVA_HOME=$JAVA_HOME_11_X64" >> $GITHUB_ENV
-          echo "JAVA8_HOME=$JAVA_HOME_8_X64" >> $GITHUB_ENV
-          echo "$JAVA_HOME_11_X64/bin" >> $GITHUB_PATH
+          echo "JAVA_HOME=$JAVA_HOME_21_X64" >> $GITHUB_ENV
+          echo "$JAVA_HOME_21_X64/bin" >> $GITHUB_PATH
 
       - name: Setup Clojure
-        uses: DeLaGuardo/setup-clojure@10.0
+        uses: DeLaGuardo/setup-clojure@12.5
         with:
-          cli: 1.11.1.1200
+          cli: latest
       
       - run: ./script/test.sh
 
@@ -47,7 +47,7 @@ jobs:
         run: |
           lein deploy clojars
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: jar
           path: 'target/*.jar'
