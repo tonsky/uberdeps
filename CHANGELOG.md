@@ -1,3 +1,8 @@
+### 1.5.0 - Nov 21, 2026
+
+- tools.deps updated to 0.32.1650 #56 via @shilder
+- clojure updated to 1.11.4
+
 ### 1.4.0 - Aug 6, 2024
 
 - Merge :override-deps from :aliases #49 #53 via @dkick
