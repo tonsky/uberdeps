@@ -3,8 +3,8 @@
   :license     {:name "MIT" :url "https://github.com/tonsky/uberdeps/blob/master/LICENSE"}
   :url         "https://github.com/tonsky/uberdeps"
   :dependencies
-  [[org.clojure/clojure "1.11.1"]
-   [org.clojure/tools.deps "0.18.1335"]]
+  [[org.clojure/clojure "1.11.4"]
+   [org.clojure/tools.deps "0.32.1650"]]
   :deploy-repositories
   {"clojars"
    {:url "https://clojars.org/repo"
