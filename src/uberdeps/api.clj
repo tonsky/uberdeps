@@ -1,9 +1,9 @@
 (ns uberdeps.api
   (:require
-    [clojure.edn :as edn]
     [clojure.java.io :as io]
     [clojure.string :as str]
     [clojure.tools.deps :as deps]
+    [clojure.tools.deps.edn :as deps.edn]
     [clojure.tools.deps.util.dir :as deps.dir]
     [clojure.xml :as xml]
     [clojure.zip :as zip])
@@ -129,9 +129,9 @@
 
 
 (defn deps-map [deps {:keys [aliases]}]
-  (let [deps-map          (deps/merge-edns
-                            [(deps/root-deps)
-                             (@#'deps/canonicalize-all-syms deps)])
+  (let [deps-map          (deps.edn/merge-edns
+                            [(deps.edn/root-deps)
+                             (deps.edn/canonicalize deps)])
         alias-maps        (mapv (:aliases deps-map) aliases)
         replace-deps-old  (reduce #(merge %1 (:deps %2)) nil alias-maps)
         replace-deps      (reduce #(merge %1 (:replace-deps %2)) nil alias-maps)
