@@ -22,16 +22,17 @@ jobs:
       CLOJARS_TOKEN: ${{ secrets.CLOJARS_DEPLOY_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - run: |
           echo "JAVA_HOME=$JAVA_HOME_21_X64" >> $GITHUB_ENV
           echo "$JAVA_HOME_21_X64/bin" >> $GITHUB_PATH
 
       - name: Setup Clojure
-        uses: DeLaGuardo/setup-clojure@12.5
+        uses: DeLaGuardo/setup-clojure@13.7.0
         with:
           cli: latest
+          lein: latest
       
       - run: ./script/test.sh
 
@@ -47,7 +48,7 @@ jobs:
         run: |
           lein deploy clojars
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: jar
           path: 'target/*.jar'
